@@ -1577,9 +1577,10 @@ class Expedition extends CommonObject
 	/**
 	 *	Load lines
 	 *
-	 *	@return	int		>0 if OK, Otherwise if KO
+	 *	@param	int		$only_product	Return only physical products, not services
+	 *	@return	int						>0 if OK, Otherwise if KO
 	 */
-	public function fetch_lines()
+	public function fetch_lines($only_product = 0)
 	{
 		// phpcs:enable
 		global $conf, $mysoc;
@@ -1600,6 +1601,9 @@ class Expedition extends CommonObject
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product as p ON p.rowid = cd.fk_product";
 		$sql .= " WHERE ed.fk_expedition = ".((int) $this->id);
 		$sql .= " AND ed.fk_origin_line = cd.rowid";
+		if ($only_product) {
+			$sql .= " AND p.fk_product_type = 0";
+		}
 		$sql .= " ORDER BY cd.rang, ed.fk_origin_line";		// We need after a break on fk_origin_line but when there is no break on fk_origin_line, cd.rang is same so we can add it as first order criteria.
 
 		dol_syslog(get_class($this)."::fetch_lines", LOG_DEBUG);
